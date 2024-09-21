@@ -174,7 +174,7 @@ def main():
         batch=16,                 # Tamanho do batch
         name='yolov10l_trained',   # Nome do experimento
         project='runs/train',     # Diretório de saída
-        device='cpu',             # GPU a ser usada, 'cpu' para CPU
+        device='cuda',             # GPU a ser usada, 'cpu' para CPU
         verbose=True
     )
 
