@@ -1,0 +1,18 @@
+names:
+  0: bio
+  1: cloth
+  2: fishing
+  3: metal
+  4: paper
+  5: papper
+  6: plastic
+  7: platstic
+  8: rov
+  9: rubber
+  10: timestamp
+  11: unknown
+  12: wood
+path: /Users/arthurbrenno/Documents/Dev/Public/aguavivatrain/data/archive
+test: test
+train: train
+val: val
