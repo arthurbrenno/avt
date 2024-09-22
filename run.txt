@@ -1,0 +1,9 @@
+python main.py \
+  --model-path models/yolov10m.pt \
+  --data-dir path/to/dados \
+  --epochs 50 \
+  --imgsz 512 \
+  --batch-size 32 \
+  --output-name meu_treino \
+  --project-dir meus_runs \
+  --device cpu
