@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import yaml
+import argparse
 from ultralytics import YOLO
 
 def parse_xml_annotations(data_dir, classes_set):
@@ -111,15 +112,70 @@ def create_data_yaml(base_dir, classes):
         'train': 'train',
         'val': 'val',
         'test': 'test',
-        'names': {i: class_name for i, class_name in enumerate(classes)}
+        'names': classes  # Alterado para uma lista, conforme esperado pelo YOLO
     }
 
     with open('data.yaml', 'w') as f:
         yaml.dump(data, f)
 
 def main():
-    # Defina o diretório base dos dados de forma relativa ao script
-    base_data_dir = Path(__file__).parent / "data/archive"
+    parser = argparse.ArgumentParser(
+        description="Script para converter anotações XML para YOLO e treinar um modelo YOLO.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        '--model-path',
+        type=str,
+        required=True,
+        help='Caminho para o arquivo do modelo YOLO (.pt) a ser treinado.'
+    )
+    parser.add_argument(
+        '--data-dir',
+        type=str,
+        default='data/archive',
+        help='Caminho para o diretório base dos dados.'
+    )
+    parser.add_argument(
+        '--epochs',
+        type=int,
+        default=100,
+        help='Número de épocas para treinamento.'
+    )
+    parser.add_argument(
+        '--imgsz',
+        type=int,
+        default=640,
+        help='Tamanho da imagem para treinamento.'
+    )
+    parser.add_argument(
+        '--batch-size',
+        type=int,
+        default=16,
+        help='Tamanho do batch para treinamento.'
+    )
+    parser.add_argument(
+        '--output-name',
+        type=str,
+        default='yolov_trained',
+        help='Nome do experimento de treinamento.'
+    )
+    parser.add_argument(
+        '--project-dir',
+        type=str,
+        default='runs/train',
+        help='Diretório de saída para os resultados do treinamento.'
+    )
+    parser.add_argument(
+        '--device',
+        type=str,
+        default='cuda',
+        help="Dispositivo a ser usado para treinamento ('cuda' ou 'cpu')."
+    )
+
+    args = parser.parse_args()
+
+    # Defina o diretório base dos dados
+    base_data_dir = Path(args.data_dir)
 
     # Verifique se o diretório existe
     if not base_data_dir.exists():
@@ -163,18 +219,18 @@ def main():
     print("Arquivo data.yaml criado com sucesso.")
 
     # Iniciar o treinamento
-    # Use um modelo padrão ou forneça o caminho correto para o seu modelo
-    model = YOLO('models/yolov10l.pt')  # Substitua pelo caminho correto se necessário
+    model_path = args.model_path
+    model = YOLO(model_path)  # Usa o caminho fornecido via CLI
 
     # Iniciar o treinamento
     model.train(
         data='data.yaml',
-        epochs=100,               # Ajuste conforme necessário
-        imgsz=640,                # Tamanho da imagem
-        batch=16,                 # Tamanho do batch
-        name='yolov10l_trained',   # Nome do experimento
-        project='runs/train',     # Diretório de saída
-        device='cuda',             # GPU a ser usada, 'cpu' para CPU
+        epochs=args.epochs,               # Ajustado via argumento
+        imgsz=args.imgsz,                 # Ajustado via argumento
+        batch=args.batch_size,            # Ajustado via argumento
+        name=args.output_name,            # Ajustado via argumento
+        project=args.project_dir,         # Ajustado via argumento
+        device=args.device,               # Ajustado via argumento
         verbose=True
     )
 
